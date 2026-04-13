@@ -56,11 +56,11 @@ For both cases, the generate stops, without anything like [`sql/testtext.sql`](s
 
 For [`sql/testcitextin.sql`](sql/testcitextin.sql) one, the error message doesn't shows which item causes this problem, makes it hard to find out the problematic item while there are lots of items.
 
-But for [`sql/\testtext.sql`](sql/testtext.sql) with [`BeforeFix/efpt.testtext.config.json`](BeforeFix/efpt.testtext.config.json), it generates codes in [`BeforeFix/TestTextModels/`](BeforeFix/TestTextModels/) successfully.
+But for [`sql/testtext.sql`](sql/testtext.sql) with [`BeforeFix/efpt.testtext.config.json`](BeforeFix/efpt.testtext.config.json), it generates codes in [`BeforeFix/TestTextModels/`](BeforeFix/TestTextModels/) successfully.
 
 ### Problem 4: The renaming of returned table column doesn't work
 
-The Edit UI can only rename the function name `testtext` into `TestText`, not supporting the returned table. Even with manual editing of [`BeforeFix/efpt.testtext.config.json`](BeforeFix/efpt.testtext.config.json) (it's easy now with the help of AI) to rename the returned table column, it doesn't work. You can check the generated code in [`BeforeFix/TestTextModels/TestTextResult.cs`](BeforeFix/TestTextModels/TestTextResult.cs). And the manual editing of [`BeforeFix/efpt.renaming.json`](BeforeFix/efpt.renaming.json) will be overridden by later Edit UI.
+The Edit UI can only rename the function name `testtext` into `TestText`, not supporting the returned table's column names. Even with manual editing of [`BeforeFix/efpt.renaming.json`](BeforeFix/efpt.renaming.json) (it's easy now with the help of AI) to rename the returned table column, it doesn't work. You can check the generated code in [`BeforeFix/TestTextModels/TestTextResult.cs`](BeforeFix/TestTextModels/TestTextResult.cs). And the manual editing of [`BeforeFix/efpt.renaming.json`](BeforeFix/efpt.renaming.json) will be overridden by later Edit UI.
 
 ## The Fixes
 
@@ -87,7 +87,7 @@ Sorry it's hard for me to contribute a PR to the original repo, because of:
 
 1. These changes are made by GitHub Copilot mainly. I can understand some easier ones. But I can't fully understand the whole picture of EFCPT.
 2. I didn't drill down into how to unit test these changes, by EFCPT's own way.
-3. The renaming of returned table column lacks of Edit UI supports. I'm not sure whether you are willing to add this feature or not.
+3. The renaming of returned table column names lacks Edit UI supports. I'm not sure whether you are willing to add this feature or not.
 4. I've changed many other files for local running/debugging. I believe these are not what you want.
 5. I'm not familiar of how GitHub/PR works.
 
