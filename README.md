@@ -60,7 +60,7 @@ But for [`sql/\testtext.sql`](sql/testtext.sql) with [`BeforeFix/efpt.testtext.c
 
 ### Problem 4: The renaming of returned table column doesn't work
 
-The Edit UI can only rename the function name `testtext` into `TestText`, not supporting the returned table. Even with manual editing of [`BeforeFix/efpt.testtext.config.json`](efpt.testtext.config.json) (it's easy now with the help of AI) to rename the returned table column, it doesn't work. You can check the generated code in [`BeforeFix/TestTextModels/TestTextResult.cs`](TestTextModels/TestTextResult.cs). And the manual editing of [`BeforeFix/efpt.testtext.config.json`] will be overridden by later Edit UI.
+The Edit UI can only rename the function name `testtext` into `TestText`, not supporting the returned table. Even with manual editing of [`BeforeFix/efpt.testtext.config.json`](BeforeFix/efpt.testtext.config.json) (it's easy now with the help of AI) to rename the returned table column, it doesn't work. You can check the generated code in [`BeforeFix/TestTextModels/TestTextResult.cs`](BeforeFix/TestTextModels/TestTextResult.cs). And the manual editing of [`BeforeFix/efpt.renaming.json`](BeforeFix/efpt.renaming.json) will be overridden by later Edit UI.
 
 ## The Fixes
 
@@ -79,7 +79,7 @@ Unable to scaffold "dbo"."testrefcursor": parameter 'p_refcur' has unsupported s
 
 It clearly indicates the problematic item, without blocking others. (We are not willing to use `refcursor`, so it's not a blocking problem for us.)
 
-And all other codes generated successfully, under [`AfterFix/Models/`](AfterFix/TestCitextOutModels/) folders. Mainly in [`AfterFix/Models/TestTextResult.cs`](AfterFix/Models/PGContextFunctions.cs) with `testcitextinAsync()`/`testcitextoutAsync()`/`TestTextAsync()` generated. And the renaming result is in [`AfterFix/Models/TestTextResult.cs`](AfterFix/Models/TestTextResult.cs). The column name is now `ResultColumn` with `[Column("resultcolumn")]` attribute, instead of `resultcolumn`.
+And all other codes generated successfully, under [`AfterFix/Models/`](AfterFix/Models/) folders. Mainly in [`AfterFix/Models/TestTextResult.cs`](AfterFix/Models/PGContextFunctions.cs) with `testcitextinAsync()`/`testcitextoutAsync()`/`TestTextAsync()` generated. And the renaming result is in [`AfterFix/Models/TestTextResult.cs`](AfterFix/Models/TestTextResult.cs). The column name is now `ResultColumn` with `[Column("resultcolumn")]` attribute, instead of `resultcolumn`.
 
 ## No PR for original repo
 
