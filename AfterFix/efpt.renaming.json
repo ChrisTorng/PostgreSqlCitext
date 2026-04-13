@@ -1,0 +1,18 @@
+﻿[
+   {
+      "SchemaName": "dbo",
+      "Tables": [
+         {
+            "Columns": [
+               {
+                  "Name": "resultcolumn",
+                  "NewName": "ResultColumn"
+               }
+            ],
+            "Name": "testtext",
+            "NewName": "TestText"
+         }
+      ],
+      "UseSchemaName": false
+   }
+]

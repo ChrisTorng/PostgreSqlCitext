@@ -15,7 +15,7 @@ There are four problems I'm facing:
 3. The generation stops without other normal ones generated, and not showing which item causes the problem.
 4. The renaming of function returned table column doesn't work on Edit UI or on `efpt.renaming.json`.
 
-## Problem 1: `citext` parameter in function
+### Problem 1: `citext` parameter in function
 
 For a simple [`sql/testcitextin.sql`](sql/testcitextin.sql), using original EF Core Power Tools to refresh [`BeforeFix/efpt.testcitextin.config.json`](BeforeFix/efpt.testcitextin.config.json), it ends up this error message:
 ```
@@ -33,7 +33,7 @@ System.Exception: System.ArgumentOutOfRangeException: cleanedTypeName: USER-DEFI
    at RevEng.Core.ReverseEngineerRunner.GenerateFiles(ReverseEngineerCommandOptions options) in D:\a\EFCorePowerTools\EFCorePowerTools\src\Core\RevEng.Core.80\ReverseEngineerRunner.cs:line 107
 ```
 
-## Problem 2: `citext` return value in function
+### Problem 2: `citext` return value in function
 
 For [`sql/testcitextout.sql`](sql/testcitextout.sql) with [`BeforeFix/efpt.testcitextout.config.json`](BeforeFix/efpt.testcitextout.config.json), it ends up this error message:
 ```
@@ -50,7 +50,7 @@ System.Exception: System.ArgumentOutOfRangeException: storetype: citext, objectN
    at RevEng.Core.ReverseEngineerRunner.GenerateFiles(ReverseEngineerCommandOptions options) in D:\a\EFCorePowerTools\EFCorePowerTools\src\Core\RevEng.Core.80\ReverseEngineerRunner.cs:line 107
 ```
 
-## Problem 3: Generate stops without showing which item causes the problem
+### Problem 3: Generate stops without showing which item causes the problem
 
 For both cases, the generate stops, without anything like [`sql/testtext.sql`](sql/testtext.sql) related generated. You can check [`BeforeFix/TestCitextInModels/`](BeforeFix/TestCitextInModels/) and [`BeforeFix/TestCitextOutModels/`](BeforeFix/TestCitextOutModels/) folders for generated codes.
 
@@ -58,6 +58,37 @@ For [`sql/testcitextin.sql`](sql/testcitextin.sql) one, the error message doesn'
 
 But for [`sql/\testtext.sql`](sql/testtext.sql) with [`BeforeFix/efpt.testtext.config.json`](BeforeFix/efpt.testtext.config.json), it generates codes in [`BeforeFix/TestTextModels/`](BeforeFix/TestTextModels/) successfully.
 
-## Problem 4: The renaming of returned table column doesn't work
+### Problem 4: The renaming of returned table column doesn't work
 
 The Edit UI can only rename the function name `testtext` into `TestText`, not supporting the returned table. Even with manual editing of [`BeforeFix/efpt.testtext.config.json`](efpt.testtext.config.json) (it's easy now with the help of AI) to rename the returned table column, it doesn't work. You can check the generated code in [`BeforeFix/TestTextModels/TestTextResult.cs`](TestTextModels/TestTextResult.cs). And the manual editing of [`BeforeFix/efpt.testtext.config.json`] will be overridden by later Edit UI.
+
+## The Fixes
+
+I've forked [ErikEJ/EFCorePowerTools](https://github.com/ErikEJ/EFCorePowerTools) from [chore: move sln to slnx (#3343)](https://github.com/ErikEJ/EFCorePowerTools/commit/cfb4c2f99616d8e2886440d35555fa1b4c842457) into my repo [ChrisTorng/EFCorePowerTools](https://github.com/ChrisTorng/EFCorePowerTools). With the help of GitHub Copilot, I made some changes to make it works on my Visual Studio 2026 Insiders, easier to debug (cause I can't found other easier ways). And the fixes are these:
+
+1. Problem 1/2 (`citext` in/out): [Fix citext in/out parameter code gen](https://github.com/ChrisTorng/EFCorePowerTools/commit/96a3ec6407b33766da612f1acba6aee945e8c5bf) and [Fix citext in/out parameter code genenation](https://github.com/ChrisTorng/EFCorePowerTools/commit/fde5123aa40cbf9a6144306502e725439da85015).
+2. Problem 3 (generation stops without which): [Always generate code by pre-check, print error message and remove problematic items](https://github.com/ChrisTorng/EFCorePowerTools/commit/2ba803314e3b0adca9e5217777a1feec8ae1adda).
+3. Problem 4 (renaming of returned table column): [Add Result class rename function](https://github.com/ChrisTorng/EFCorePowerTools/commit/ae83a5a1d8728a1baa59f731a7444f4171592904). But it only works on `Refresh`. The manual editing of [`AfterFix/efpt.renaming.json`](AfterFix/efpt.renaming.json) doesn't survive after Edit UI.
+
+### The Results
+
+The fixed version of EFCPT, Refreshing the [`AfterFix/efpt.config.json`](AfterFix/efpt.config.json), has one error message left:
+```
+Unable to scaffold "dbo"."testrefcursor": parameter 'p_refcur' has unsupported store type 'refcursor'. storetype: refcursor, objectName: p_refcur (Parameter 'storeType')
+```
+
+It clearly indicates the problematic item, without blocking others. (We are not willing to use `refcursor`, so it's not a blocking problem for us.)
+
+And all other codes generated successfully, under [`AfterFix/Models/`](AfterFix/TestCitextOutModels/) folders. Mainly in [`AfterFix/Models/TestTextResult.cs`](AfterFix/Models/PGContextFunctions.cs) with `testcitextinAsync()`/`testcitextoutAsync()`/`TestTextAsync()` generated. And the renaming result is in [`AfterFix/Models/TestTextResult.cs`](AfterFix/Models/TestTextResult.cs). The column name is now `ResultColumn` with `[Column("resultcolumn")]` attribute, instead of `resultcolumn`.
+
+## No PR for original repo
+
+Sorry it's hard for me to contribute a PR to the original repo, because of:
+
+1. These changes are made by GitHub Copilot mainly. I can understand some easier ones. But I can't fully understand the whole picture of EFCPT.
+2. I didn't drill down into how to unit test these changes, by EFCPT's own way.
+3. The renaming of returned table column lacks of Edit UI supports. I'm not sure whether you are willing to add this feature or not.
+4. I've changed many other files for local running/debugging. I believe these are not what you want.
+5. I'm not familiar of how GitHub/PR works.
+
+Hope these fixes helps EFCPT to support PostgreSQL `citext` type, easier to diagnose problem, and better renaming supports.
