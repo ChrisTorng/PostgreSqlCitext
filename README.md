@@ -140,3 +140,39 @@ System.Exception: System.ArgumentOutOfRangeException: storetype: citext, objectN
 ```
 
 It only generate a single file: [`Official_2_6_1584/TestCitextOutModels/PGContext.cs`](Official_2_6_1584/TestCitextOutModels/PGContext.cs).
+
+## Official_20260420
+
+I found that the [latest daily build 2.6.1584](https://www.vsixgallery.com/extension/f4c4712c-ceae-4803-8e52-0e2049d5de9f)'s vsix, has an old `efreveng80.exe.zip` inside. The newest file in `efreveng80.exe.zip` is 2025/9/26, not the expected.
+
+I've forked [ErikEJ/EFCorePowerTools](https://github.com/ErikEJ/EFCorePowerTools) from 2026/4/17 [Enable SQLite NodaTime support in EF Core 10 scaffolding paths (#3417)](https://github.com/ErikEJ/EFCorePowerTools/commit/178238bed4aa3cc5092ee28f28e6f7cdca239147) into my repo [ChrisTorng/EFCorePowerTools](https://github.com/ChrisTorng/EFCorePowerTools)'s [upstream_20260420]() branch.
+
+After fix build problems:
+
+1. Run `RevEng\efreveng80\BuildCmdlineTool.cmd` to generate `EFCorePowerTools\efreveng80.exe.zip`.
+2. Delete `%TEMP%\efreveng8.2.6.0.1` folder.
+3. Run `EFCorePowerTools`, it will recreate `%TEMP%\efreveng8.2.6.0.1` folder by unzipping `EFCorePowerTools\efreveng80.exe.zip` into it.
+
+The results:
+1. For [`Official_20260420/efpt.testcitextin.config.json`](Official_20260420/efpt.testcitextin.config.json): it generates [`Official_20260420/TestCitextInModels`](Official_2_6_1584/TestCitextInModels) successfully without error message.
+2. For [`Official_20260420/efpt.testcitextout.config.json`](Official_20260420/efpt.testcitextout.config.json): it generates [`Official_20260420/TestCitextOutModels`](Official_2_6_1584/TestCitextOutModels) successfully without error message.  
+
+But the code under [`Official_20260420/TestCitextOutModels`](Official_2_6_1584/TestCitextOutModels) has errors:
+
+[`IPGContextFunctions.cs`](Official_20260420/TestCitextOutModels/IPGContextFunctions.cs) L16 lacks first parameter:
+```
+Task<List<testcitextoutResult>> testcitextoutAsync(, CancellationToken cancellationToken = default);
+```
+
+[`PGContextFunctions.cs`](Official_20260420/TestCitextOutModels/PGContextFunctions.cs) L46-54 lacks first parameter, and `npgsqlParameters` has [CS0826](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/array-declaration-errors#invalid-element-type): `No best type found for implicitly-typed array` error:
+```
+public virtual async Task<List<testcitextoutResult>> testcitextoutAsync(, CancellationToken ancellationToken = default)
+{
+    var npgsqlParameters = new []
+    {
+    };
+    var _ = await _context.SqlQueryAsync<testcitextoutResult>("SELECT * FROM \"dbo\"."testcitextout\" ()", npgsqlParameters, cancellationToken);
+
+    return _;
+}
+```
