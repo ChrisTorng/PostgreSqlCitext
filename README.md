@@ -143,7 +143,7 @@ It only generate a single file: [`Official_2_6_1584/TestCitextOutModels/PGContex
 
 ## Official_20260420
 
-I found that the [latest daily build 2.6.1584](https://www.vsixgallery.com/extension/f4c4712c-ceae-4803-8e52-0e2049d5de9f)'s vsix, has an old `efreveng80.exe.zip` inside. The newest file in `efreveng80.exe.zip` is 2025/9/26, not the expected.
+I found that the [latest daily build 2.6.1584](https://www.vsixgallery.com/extension/f4c4712c-ceae-4803-8e52-0e2049d5de9f)'s [`EF Core Power Tools v2.6.1584.vsix`](https://www.vsixgallery.com/extensions/f4c4712c-ceae-4803-8e52-0e2049d5de9f/EF%20Core%20Power%20Tools%20v2.6.1584.vsix), has an old `efreveng80.exe.zip` inside. The latest file in `efreveng80.exe.zip` is 2025/9/26, not the expected 2026/4/17.
 
 I've forked [ErikEJ/EFCorePowerTools](https://github.com/ErikEJ/EFCorePowerTools) from 2026/4/17 [Enable SQLite NodaTime support in EF Core 10 scaffolding paths (#3417)](https://github.com/ErikEJ/EFCorePowerTools/commit/178238bed4aa3cc5092ee28f28e6f7cdca239147) into my repo [ChrisTorng/EFCorePowerTools](https://github.com/ChrisTorng/EFCorePowerTools)'s [upstream_20260420](https://github.com/ChrisTorng/EFCorePowerTools/tree/upstream_20260420) branch.
 
