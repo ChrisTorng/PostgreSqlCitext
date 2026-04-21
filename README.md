@@ -179,7 +179,7 @@ public virtual async Task<List<testcitextoutResult>> testcitextoutAsync(, Cancel
 
 ## Official_20260420_Fix
 
-In [Fix code generation without input parameter's case](https://github.com/ErikEJ/EFCorePowerTools/commit/c22fe2dcae1434637fd8257573d47be630761507) commit, after reapply fixes in [Fix citext in/out parameter code gen.](https://github.com/ErikEJ/EFCorePowerTools/commit/96a3ec6407b33766da612f1acba6aee945e8c5bf)'s [`RevEng.Core.80\Routines\PostgresRoutineModelFactory.cs](src\Core\RevEng.Core.80\Routines\PostgresRoutineModelFactory.cs):
+In [Fix code generation without input parameter's case](https://github.com/ErikEJ/EFCorePowerTools/commit/c22fe2dcae1434637fd8257573d47be630761507) commit, after reapply fixes in [Fix citext in/out parameter code gen.](https://github.com/ErikEJ/EFCorePowerTools/commit/96a3ec6407b33766da612f1acba6aee945e8c5bf)'s [`RevEng.Core.80\Routines\PostgresRoutineModelFactory.cs](https://github.com/ErikEJ/EFCorePowerTools/commit/96a3ec6407b33766da612f1acba6aee945e8c5bf#diff-ac24f86d23f7321881c82ba1308e5656e795749d8ccbb903f4c6ce9332cc8cbf):
 ```
 Sb.AppendLine("var npgsqlParameters = new []");
 ```
