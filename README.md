@@ -145,7 +145,7 @@ It only generate a single file: [`Official_2_6_1584/TestCitextOutModels/PGContex
 
 I found that the [latest daily build 2.6.1584](https://www.vsixgallery.com/extension/f4c4712c-ceae-4803-8e52-0e2049d5de9f)'s vsix, has an old `efreveng80.exe.zip` inside. The newest file in `efreveng80.exe.zip` is 2025/9/26, not the expected.
 
-I've forked [ErikEJ/EFCorePowerTools](https://github.com/ErikEJ/EFCorePowerTools) from 2026/4/17 [Enable SQLite NodaTime support in EF Core 10 scaffolding paths (#3417)](https://github.com/ErikEJ/EFCorePowerTools/commit/178238bed4aa3cc5092ee28f28e6f7cdca239147) into my repo [ChrisTorng/EFCorePowerTools](https://github.com/ChrisTorng/EFCorePowerTools)'s [upstream_20260420]() branch.
+I've forked [ErikEJ/EFCorePowerTools](https://github.com/ErikEJ/EFCorePowerTools) from 2026/4/17 [Enable SQLite NodaTime support in EF Core 10 scaffolding paths (#3417)](https://github.com/ErikEJ/EFCorePowerTools/commit/178238bed4aa3cc5092ee28f28e6f7cdca239147) into my repo [ChrisTorng/EFCorePowerTools](https://github.com/ChrisTorng/EFCorePowerTools)'s [upstream_20260420](https://github.com/ChrisTorng/EFCorePowerTools/tree/upstream_20260420) branch.
 
 After fix build problems:
 
@@ -159,12 +159,12 @@ The results:
 
 But the code under [`Official_20260420/TestCitextOutModels`](Official_2_6_1584/TestCitextOutModels) has errors:
 
-[`IPGContextFunctions.cs`](Official_20260420/TestCitextOutModels/IPGContextFunctions.cs) L16 lacks first parameter:
+[`Official_20260420/IPGContextFunctions.cs`](Official_20260420/TestCitextOutModels/IPGContextFunctions.cs) L16 lacks first parameter:
 ```
 Task<List<testcitextoutResult>> testcitextoutAsync(, CancellationToken cancellationToken = default);
 ```
 
-[`PGContextFunctions.cs`](Official_20260420/TestCitextOutModels/PGContextFunctions.cs) L46-54 lacks first parameter, and `npgsqlParameters` has [CS0826](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/array-declaration-errors#invalid-element-type): `No best type found for implicitly-typed array` error:
+[`Official_20260420/PGContextFunctions.cs`](Official_20260420/TestCitextOutModels/PGContextFunctions.cs) L46-54 lacks first parameter, and `npgsqlParameters` has [CS0826](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/array-declaration-errors#invalid-element-type): `No best type found for implicitly-typed array` error:
 ```
 public virtual async Task<List<testcitextoutResult>> testcitextoutAsync(, CancellationToken ancellationToken = default)
 {
@@ -176,3 +176,27 @@ public virtual async Task<List<testcitextoutResult>> testcitextoutAsync(, Cancel
     return _;
 }
 ```
+
+## Official_20260420_Fix
+
+In [Fix code generation without input parameter's case](https://github.com/ErikEJ/EFCorePowerTools/commit/c22fe2dcae1434637fd8257573d47be630761507) commit, after reapply fixes in [Fix citext in/out parameter code gen.](https://github.com/ErikEJ/EFCorePowerTools/commit/96a3ec6407b33766da612f1acba6aee945e8c5bf)'s [`RevEng.Core.80\Routines\PostgresRoutineModelFactory.cs](src\Core\RevEng.Core.80\Routines\PostgresRoutineModelFactory.cs):
+```
+Sb.AppendLine("var npgsqlParameters = new []");
+```
+↓
+```
+Sb.AppendLine("var npgsqlParameters = new object[]");
+```
+
+```
+line += useAsyncCalls ? $", CancellationToken{nullable} cancellationToken = default)" : ")";
+```
+↓
+```
+var hasParams = paramStrings.Any() || outParams.Count > 0;
+line += useAsyncCalls
+    ? $"{(hasParams ? ", " : string.Empty)}CancellationToken{nullable} cancellationToken = default)"
+    : ")";
+```
+
+It generates [`Official_20260420_Fix/IPGContextFunctions.cs`](Official_20260420_Fix/TestCitextOutModels/IPGContextFunctions.cs)/[`Official_20260420_Fix/PGContextFunctions.cs`](Official_20260420_Fix/TestCitextOutModels/PGContextFunctions.cs) succesfully without error message. The code is correct too.
